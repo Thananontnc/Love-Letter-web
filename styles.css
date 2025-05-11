@@ -1,0 +1,238 @@
+/* 
+ * Digital Love Letter - Styles
+ * This file contains all the styling for the interactive love letter
+ */
+
+/* Base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Cormorant Garamond', serif;
+    background-color: #f8e8e8;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    overflow-x: hidden;
+    padding: 20px;
+    position: relative;
+}
+
+.instructions {
+    position: absolute;
+    top: 20px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    color: #9e5a63;
+    font-size: 16px;
+    opacity: 0.8;
+    transition: opacity 0.5s ease;
+}
+
+/* Envelope styles */
+.envelope-container {
+    position: relative;
+    width: 300px;
+    height: 200px;
+    perspective: 1000px;
+    margin: 50px auto;
+}
+
+.envelope {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 1s ease;
+    cursor: pointer;
+}
+
+.envelope-front {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: #e6c0c0;
+    border-radius: 5px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    z-index: 2;
+    backface-visibility: hidden;
+}
+
+.envelope-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: #e6c0c0;
+    border-radius: 5px;
+    transform: rotateY(180deg);
+    backface-visibility: hidden;
+}
+
+.envelope-flap {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 80px;
+    background-color: #d4a6a6;
+    clip-path: polygon(0 0, 50% 80%, 100% 0);
+    transform-origin: top;
+    transition: transform 1s ease;
+    z-index: 3;
+}
+
+.envelope.open .envelope-flap {
+    transform: rotateX(180deg);
+}
+
+.envelope.open {
+    transform: rotateY(180deg);
+}
+
+/* Letter styles */
+.letter-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 90%;
+    max-height: 0;
+    overflow: hidden;
+    background-color: #fff9f0;
+    border-radius: 5px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    transform: translate(-50%, -50%);
+    transition: max-height 1.5s ease, transform 1.5s ease;
+    z-index: 1;
+    cursor: pointer;
+}
+
+.envelope.open + .letter-container {
+    max-height: 400px;
+    transform: translate(-50%, -50%) translateY(-20px);
+    transition-delay: 0.5s;
+}
+
+.letter {
+    padding: 30px;
+    text-align: center;
+    color: #5d4037;
+}
+
+.letter h1 {
+    font-family: 'Dancing Script', cursive;
+    font-size: 2rem;
+    margin-bottom: 20px;
+    color: #9e5a63;
+}
+
+.letter p {
+    line-height: 1.6;
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+}
+
+.letter .signature {
+    font-family: 'Dancing Script', cursive;
+    font-size: 1.5rem;
+    margin-top: 30px;
+    text-align: right;
+    color: #9e5a63;
+}
+
+/* Fullscreen letter view */
+.fullscreen-letter {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease;
+}
+
+.fullscreen-letter.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.fullscreen-letter-content {
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+    background-color: #fff9f0;
+    border-radius: 10px;
+    padding: 40px;
+    position: relative;
+}
+
+.close-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 30px;
+    height: 30px;
+    background-color: #9e5a63;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.close-btn:hover {
+    background-color: #7d4549;
+}
+
+/* Media Queries */
+@media (max-width: 768px) {
+    .envelope-container {
+        width: 280px;
+        height: 180px;
+    }
+    
+    .letter h1 {
+        font-size: 1.8rem;
+    }
+    
+    .letter p {
+        font-size: 1rem;
+    }
+    
+    .fullscreen-letter-content {
+        padding: 30px;
+    }
+}
+
+@media (max-width: 480px) {
+    .envelope-container {
+        width: 250px;
+        height: 160px;
+    }
+    
+    .letter h1 {
+        font-size: 1.6rem;
+    }
+    
+    .letter p {
+        font-size: 0.9rem;
+    }
+    
+    .fullscreen-letter-content {
+        padding: 20px;
+    }
+}

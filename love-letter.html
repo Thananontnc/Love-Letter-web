@@ -5,336 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Love Letter</title>
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Lora:ital@0;1&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Lora', serif;
-            background: linear-gradient(135deg, #ffcdd2 0%, #f8bbd0 100%);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            overflow: hidden;
-            color: #5d4037;
-        }
-        
-        .envelope-wrapper {
-            position: relative;
-            width: 600px;
-            height: 350px;
-            cursor: pointer;
-            perspective: 1000px;
-            transition: opacity 1s ease;
-        }
-        
-        .envelope-wrapper.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-        
-        .envelope {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(145deg, #f5f5f5 0%, #e0e0e0 100%);
-            border-radius: 10px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
-            z-index: 2;
-            overflow: hidden;
-            border: 1px solid #ccc;
-        }
-        
-        .envelope-flap {
-            position: absolute;
-            top: 0;
-            width: 100%;
-            height: 175px;
-            background: linear-gradient(145deg, #e0e0e0 0%, #d0d0d0 100%);
-            clip-path: polygon(0 0, 50% 50%, 100% 0);
-            transform-origin: top;
-            transition: transform 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-            z-index: 3;
-            border-radius: 10px 10px 0 0;
-            border-bottom: 1px solid #ccc;
-            will-change: transform;
-        }
-        
-        .envelope-flap.open {
-            transform: rotateX(180deg);
-        }
-        
-        .envelope-flap::after {
-            content: '❤';
-            position: absolute;
-            top: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: #e91e63;
-            font-size: 24px;
-            opacity: 0.8;
-        }
-        
-        .letter {
-            position: absolute;
-            top: 20px;
-            left: 50px;
-            width: 500px;
-            height: 300px;
-            background: #ffffff;
-            padding: 30px;
-            box-sizing: border-box;
-            text-align: center;
-            /* Separate transitions for better control */
-            transition-property: top, transform, opacity;
-            transition-duration: 1.5s, 1.5s, 0.5s;
-            transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
-            transition-delay: 1.2s, 1.2s, 0s; /* Delay the movement until flap is open */
-            z-index: 1;
-            overflow-y: auto;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            border-radius: 5px;
-            font-size: 18px;
-            line-height: 1.6;
-            transform: translateY(20px);
-            background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCI+PHBhdGggZmlsbD0icmdiYSgyMzMsIDMwLCA5OSwgMC4wMykiIGQ9Ik01MCw1MCBMMzAsMjUgTDcwLDI1IFoiLz48L3N2Zz4=');
-            border: 1px solid rgba(0,0,0,0.1);
-            will-change: transform, top;
-        }
-        
-        .letter.open {
-            top: -250px;
-            transform: translateY(0) rotate(-2deg);
-            z-index: 4;
-            /* Reset transition delay when already open */
-            transition-delay: 0s, 0s, 0s;
-        }
-        
-        .letter.peek {
-            top: -50px;
-            z-index: 4; /* Higher than envelope when peeking */
-        }
-        
-        .letter.full-view {
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            position: fixed;
-            width: 80%;
-            max-width: 600px;
-            height: 80%;
-            max-height: 80vh;
-            z-index: 100;
-            background-color: #ffffff;
-        }
-        
-        .letter h1 {
-            color: #e91e63;
-            margin-bottom: 30px;
-            font-family: 'Dancing Script', cursive;
-            font-size: 36px;
-            text-shadow: 1px 1px 1px rgba(0,0,0,0.1);
-        }
-        
-        .letter p {
-            margin-bottom: 20px;
-            font-style: italic;
-            line-height: 1.8;
-        }
-        
-        .letter .signature {
-            font-family: 'Dancing Script', cursive;
-            font-size: 28px;
-            margin-top: 40px;
-            color: #e91e63;
-        }
-        
-        .heart {
-            color: #e91e63;
-            font-size: 30px;
-            position: absolute;
-            opacity: 0;
-            transition: opacity 1s ease;
-            z-index: 10;
-            filter: drop-shadow(0 3px 5px rgba(0,0,0,0.1));
-        }
-        
-        @keyframes float {
-            0% { transform: translateY(0) rotate(0deg); }
-            33% { transform: translateY(-20px) rotate(5deg); }
-            66% { transform: translateY(-30px) rotate(-3deg); }
-            100% { transform: translateY(0) rotate(0deg); }
-        }
-        
-        .instructions {
-            position: fixed;
-            bottom: 20px;
-            background: rgba(255,255,255,0.8);
-            padding: 12px 20px;
-            border-radius: 30px;
-            font-size: 16px;
-            transition: opacity 0.5s ease;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            color: #e91e63;
-        }
-        
-        .close-button {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: #e91e63;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            font-size: 20px;
-            cursor: pointer;
-            display: none;
-            z-index: 101;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            transition: transform 0.3s ease;
-        }
-        
-        .close-button:hover {
-            transform: scale(1.1);
-        }
-        
-        .close-button.visible {
-            display: block;
-        }
-        
-        .envelope-inner {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(145deg, #e8e8e8 0%, #d8d8d8 100%);
-            border-radius: 0 0 10px 10px;
-            z-index: 1;
-        }
-        
-        .sparkle {
-            position: absolute;
-            width: 8px;
-            height: 8px;
-            background: radial-gradient(circle, #fff 0%, rgba(255,255,255,0) 70%);
-            border-radius: 50%;
-            opacity: 0;
-            pointer-events: none;
-            z-index: 10;
-        }
-        
-        @keyframes sparkle {
-            0% { transform: scale(0) rotate(0deg); opacity: 0; }
-            50% { transform: scale(1) rotate(180deg); opacity: 1; }
-            100% { transform: scale(0) rotate(360deg); opacity: 0; }
-        }
-        
-        /* Responsive styles */
-        @media (max-width: 768px) {
-            .envelope-wrapper {
-                width: 90%;
-                max-width: 400px;
-                height: 250px;
-            }
-            
-            .letter {
-                width: 85%;
-                height: 220px;
-                left: 7.5%;
-                padding: 20px;
-                font-size: 16px;
-            }
-            
-            .letter h1 {
-                font-size: 28px;
-                margin-bottom: 15px;
-            }
-            
-            .letter p {
-                margin-bottom: 12px;
-                line-height: 1.5;
-            }
-            
-            .letter .signature {
-                font-size: 24px;
-                margin-top: 20px;
-            }
-            
-            .envelope-flap {
-                height: 125px;
-            }
-            
-            .instructions {
-                font-size: 14px;
-                padding: 8px 16px;
-                bottom: 10px;
-            }
-            
-            .close-button {
-                width: 36px;
-                height: 36px;
-                font-size: 18px;
-                top: 10px;
-                right: 10px;
-            }
-            
-            .letter.open {
-                top: -180px;
-            }
-            
-            .letter.peek {
-                top: -40px;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .envelope-wrapper {
-                width: 95%;
-                max-width: 320px;
-                height: 200px;
-            }
-            
-            .letter {
-                width: 90%;
-                height: 180px;
-                left: 5%;
-                padding: 15px;
-                font-size: 14px;
-            }
-            
-            .letter h1 {
-                font-size: 24px;
-                margin-bottom: 10px;
-            }
-            
-            .letter p {
-                margin-bottom: 8px;
-                line-height: 1.4;
-            }
-            
-            .letter .signature {
-                font-size: 20px;
-                margin-top: 15px;
-            }
-            
-            .envelope-flap {
-                height: 100px;
-            }
-            
-            .letter.open {
-                top: -150px;
-            }
-            
-            .letter.peek {
-                top: -30px;
-            }
-            
-            .letter.full-view {
-                width: 95%;
-                height: 85%;
-            }
-        }
-    </style>
+    <!-- CSS styles here -->
 </head>
 <body>
     <div class="envelope-wrapper" id="envelope-wrapper">
@@ -353,161 +24,106 @@
     
     <button class="close-button" id="close-button">×</button>
     <div class="instructions" id="instructions">Tap the envelope to open it</div>
-
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // Get all necessary elements
             const envelopeWrapper = document.getElementById('envelope-wrapper');
             const envelopeFlap = document.getElementById('envelope-flap');
             const letter = document.getElementById('letter');
             const closeButton = document.getElementById('close-button');
             const instructions = document.getElementById('instructions');
+            
+            // State variables
             let isOpen = false;
             let isFullView = false;
             
-            // Open envelope on click
-            envelopeWrapper.addEventListener('click', () => {
+            // Debug log to ensure elements are found
+            console.log("Elements loaded:", {
+                envelopeWrapper,
+                envelopeFlap,
+                letter,
+                closeButton,
+                instructions
+            });
+            
+            // Simple click handler for envelope
+            envelopeWrapper.addEventListener('click', function() {
+                console.log("Envelope clicked");
+                
                 if (!isOpen) {
-                    // Prevent multiple clicks during animation
-                    envelopeWrapper.style.pointerEvents = 'none';
+                    console.log("Opening envelope");
                     
                     // Open the envelope flap
                     envelopeFlap.classList.add('open');
-                    createSparkles(15);
                     
-                    // Wait for the flap to fully open before moving the letter
+                    // Wait for envelope flap animation to complete
                     setTimeout(() => {
-                        // Pull out the letter completely
+                        console.log("Showing letter");
                         letter.classList.add('open');
                         
-                        // Add effects after letter is visible
-                        setTimeout(() => {
-                            createHearts();
-                            createSparkles(20);
-                            
-                            // Re-enable clicks after animation completes
-                            envelopeWrapper.style.pointerEvents = 'auto';
-                            
-                            // Add click event to the letter
-                            letter.addEventListener('click', showFullLetter);
-                        }, 800);
-                        
+                        // Update state and instructions
                         isOpen = true;
                         instructions.textContent = "Tap the letter to read it";
-                    }, 1200); // Ensure flap is fully open
+                        
+                        // Add click event to letter after it's visible
+                        setTimeout(() => {
+                            letter.addEventListener('click', showFullLetter);
+                        }, 2500);
+                    }, 1200);
                 }
             });
             
-            // Show letter in full view
+            // Function to show letter in full view
             function showFullLetter(e) {
-                if (!isFullView && isOpen) {
+                console.log("Letter clicked");
+                
+                if (isOpen && !isFullView) {
                     e.stopPropagation();
                     
-                    // Prevent multiple clicks
-                    letter.removeEventListener('click', showFullLetter);
-                    
-                    // Hide the envelope
+                    // Hide envelope
                     envelopeWrapper.classList.add('hidden');
                     
-                    // Show the letter in full view
+                    // Show letter in full view
                     letter.classList.remove('open');
                     letter.classList.add('full-view');
                     
                     // Show close button
                     closeButton.classList.add('visible');
                     
-                    // Update instructions
-                    instructions.textContent = "Click the × button to close";
-                    
+                    // Update state and instructions
                     isFullView = true;
+                    instructions.textContent = "Tap the × button to close";
                 }
             }
             
-            // Close letter when close button is clicked
-            closeButton.addEventListener('click', () => {
+            // Close button handler
+            closeButton.addEventListener('click', function() {
+                console.log("Close button clicked");
+                
                 if (isFullView) {
                     // Hide close button
                     closeButton.classList.remove('visible');
                     
-                    // Show envelope again
-                    envelopeWrapper.classList.remove('hidden');
-                    
-                    // Return letter to open state
+                    // Return letter to envelope
                     letter.classList.remove('full-view');
-                    letter.classList.add('open');
+                    letter.classList.add('closing');
                     
-                    // Update instructions
-                    instructions.textContent = "Tap the envelope to close it";
-                    
-                    isFullView = false;
-                    
-                    // Re-add the click event to the letter after a short delay
+                    // Show envelope again
                     setTimeout(() => {
-                        letter.addEventListener('click', showFullLetter);
-                    }, 300);
+                        envelopeWrapper.classList.remove('hidden');
+                        
+                        // Reset letter to open state
+                        setTimeout(() => {
+                            letter.classList.remove('closing');
+                            letter.classList.add('open');
+                            
+                            // Update state and instructions
+                            isFullView = false;
+                            instructions.textContent = "Tap the envelope to close it";
+                        }, 100);
+                    }, 1500);
                 }
             });
-            
-            // Create floating hearts with improved animation
-            function createHearts() {
-                for (let i = 0; i < 20; i++) {
-                    setTimeout(() => {
-                        const heart = document.createElement('div');
-                        heart.className = 'heart';
-                        heart.innerHTML = '❤';
-                        heart.style.left = Math.random() * 100 + '%';
-                        heart.style.top = Math.random() * 100 + '%';
-                        heart.style.fontSize = (20 + Math.random() * 20) + 'px';
-                        heart.style.animation = `float ${5 + Math.random() * 7}s ease-in-out infinite`;
-                        heart.style.animationDelay = `${Math.random() * 3}s`;
-                        document.body.appendChild(heart);
-                        
-                        setTimeout(() => {
-                            heart.style.opacity = '0.8';
-                        }, 100);
-                    }, i * 150);
-                }
-            }
-            
-            // Create sparkle effect with improved animation
-            function createSparkles(count) {
-                const wrapper = document.getElementById('envelope-wrapper');
-                const wrapperRect = wrapper.getBoundingClientRect();
-                const centerX = wrapperRect.left + wrapperRect.width / 2;
-                const centerY = wrapperRect.top + wrapperRect.height / 2;
-                
-                for (let i = 0; i < count; i++) {
-                    setTimeout(() => {
-                        const sparkle = document.createElement('div');
-                        sparkle.className = 'sparkle';
-                        
-                        // More natural distribution around the envelope
-                        const angle = Math.random() * Math.PI * 2;
-                        const distance = Math.random() * (wrapperRect.width/2);
-                        const x = centerX + Math.cos(angle) * distance;
-                        const y = centerY + Math.sin(angle) * distance;
-                        
-                        sparkle.style.left = x + 'px';
-                        sparkle.style.top = y + 'px';
-                        sparkle.style.animation = `sparkle ${0.8 + Math.random() * 0.8}s cubic-bezier(0.165, 0.84, 0.44, 1)`;
-                        document.body.appendChild(sparkle);
-                        
-                        setTimeout(() => {
-                            sparkle.remove();
-                        }, 1600);
-                    }, i * 80);
-                }
-            }
-            
-            // Remove hearts when envelope closes
-            function removeHearts() {
-                const hearts = document.querySelectorAll('.heart');
-                hearts.forEach(heart => {
-                    heart.style.opacity = '0';
-                    setTimeout(() => {
-                        heart.remove();
-                    }, 500);
-                });
-            }
         });
     </script>
 </body>
