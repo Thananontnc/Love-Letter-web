@@ -10,15 +10,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const fullscreenLetter = document.querySelector('.fullscreen-letter');
     const closeBtn = document.querySelector('.close-btn');
     const instructions = document.querySelector('.instructions');
+    
+    console.log("Close button found:", closeBtn); // Debug log
+    
+    // Track state
+    let isAnimating = false;
 
     // Function to open the envelope
     function openEnvelope() {
-        if (!envelope.classList.contains('open')) {
+        if (!envelope.classList.contains('open') && !isAnimating) {
+            isAnimating = true;
             envelope.classList.add('open');
             
             // Change instructions after envelope is opened
             setTimeout(() => {
                 instructions.textContent = 'Click on the letter to view it in full screen';
+                isAnimating = false;
                 
                 // Create floating hearts animation
                 createHearts();
@@ -28,16 +35,57 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Function to show letter in fullscreen
     function showFullscreenLetter() {
-        if (envelope.classList.contains('open')) {
+        if (envelope.classList.contains('open') && !isAnimating) {
+            isAnimating = true;
             fullscreenLetter.classList.add('active');
             instructions.style.opacity = '0';
+            
+            setTimeout(() => {
+                isAnimating = false;
+            }, 500);
         }
     }
 
     // Function to close fullscreen letter
     function closeFullscreenLetter() {
-        fullscreenLetter.classList.remove('active');
-        instructions.style.opacity = '0.8';
+        if (isAnimating) return;
+        isAnimating = true;
+        
+        console.log("Closing letter animation started");
+        
+        // First hide the fullscreen view
+        fullscreenLetter.style.opacity = '0';
+        
+        setTimeout(() => {
+            // Remove active class to hide fullscreen
+            fullscreenLetter.classList.remove('active');
+            fullscreenLetter.style.opacity = '1';
+            
+            // Reset letter container to visible position
+            letterContainer.style.display = 'block';
+            letterContainer.style.opacity = '1';
+            letterContainer.style.transform = 'translate(-50%, -50%) translateY(-80px)';
+            
+            // Force reflow to ensure animation works
+            letterContainer.offsetHeight;
+            
+            // Animate letter going back into envelope
+            letterContainer.style.transition = 'all 1.2s ease-in-out';
+            letterContainer.style.transform = 'translate(-50%, -50%) translateY(0)';
+            letterContainer.style.opacity = '0';
+            
+            // After letter is back in envelope, reset envelope state
+            setTimeout(() => {
+                // Reset envelope to closed state
+                envelope.classList.remove('open');
+                
+                // Update instructions
+                instructions.textContent = 'Click on the envelope to open it';
+                instructions.style.opacity = '0.8';
+                
+                isAnimating = false;
+            }, 1200);
+        }, 500);
     }
 
     // Function to create floating hearts animation
@@ -48,7 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
         for (let i = 0; i < 15; i++) {
             setTimeout(() => {
                 const heart = document.createElement('div');
-                heart.innerHTML = '❤';
+                heart.innerHTML = '❤️';
                 heart.style.position = 'absolute';
                 heart.style.fontSize = `${Math.random() * 20 + 10}px`;
                 heart.style.color = '#e91e63';
@@ -95,16 +143,33 @@ document.addEventListener('DOMContentLoaded', () => {
     // Event listeners
     envelope.addEventListener('click', openEnvelope);
     letterContainer.addEventListener('click', showFullscreenLetter);
-    closeBtn.addEventListener('click', (e) => {
-        e.stopPropagation(); // Prevent event from bubbling up
-        closeFullscreenLetter();
-    });
-
-    // Prevent closing when clicking inside the letter content
-    document.querySelector('.fullscreen-letter-content').addEventListener('click', (e) => {
+    
+    // Close button handler - simplified and focused
+    closeBtn.addEventListener('click', function(e) {
+        console.log("Close button clicked");
+        
+        // Hide fullscreen letter immediately
+        fullscreenLetter.classList.remove('active');
+        
+        // Reset envelope state
+        setTimeout(() => {
+            envelope.classList.remove('open');
+            instructions.textContent = 'Click on the envelope to open it';
+            instructions.style.opacity = '0.8';
+        }, 500);
+        
         e.stopPropagation();
     });
-
+    
+    // Prevent closing when clicking inside the letter content
+    document.querySelector('.fullscreen-letter-content').addEventListener('click', function(e) {
+        e.stopPropagation();
+    });
+    
     // Close fullscreen when clicking outside the letter content
-    fullscreenLetter.addEventListener('click', closeFullscreenLetter);
+    fullscreenLetter.addEventListener('click', function(e) {
+        if (e.target === fullscreenLetter && !isAnimating) {
+            closeFullscreenLetter();
+        }
+    });
 });
